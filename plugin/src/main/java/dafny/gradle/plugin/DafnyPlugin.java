@@ -5,6 +5,7 @@ package dafny.gradle.plugin;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
+import org.gradle.internal.impldep.com.google.common.base.Verify;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,12 +16,10 @@ import java.io.IOException;
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
         // Register a task
-        project.getTasks().register("verify", task -> {
-            task.doLast(s -> verify());
-        });
+        project.getTasks().register("verify", VerifyTask.class);
     }
 
-    private void verify() {
+    private void version() {
         Runtime rt = Runtime.getRuntime();
         try {
             Process pr = rt.exec("dafny --version");

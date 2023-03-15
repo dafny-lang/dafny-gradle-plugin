@@ -21,27 +21,13 @@ class DafnyPluginFunctionalTest {
     @TempDir
     File projectDir;
 
-    private File getBuildFile() {
-        return new File(projectDir, "build.gradle");
-    }
-
-    private File getSettingsFile() {
-        return new File(projectDir, "settings.gradle");
-    }
-
     @Test void canRunTask() throws IOException {
-        writeString(getSettingsFile(), "");
-        writeString(getBuildFile(),
-            "plugins {" +
-            "  id('dafny.gradle.plugin.greeting')" +
-            "}");
-
         // Run the build
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
         runner.withArguments("verify");
-        runner.withProjectDir(projectDir);
+        runner.withProjectDir(new File("../examples/simple-verify"));
         BuildResult result = runner.build();
 
         // Verify the result
