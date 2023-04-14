@@ -5,6 +5,8 @@ package dafny.gradle.plugin;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
+import org.gradle.api.Task;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.internal.impldep.com.google.common.base.Verify;
 
 import java.io.ByteArrayOutputStream;
@@ -15,26 +17,11 @@ import java.io.IOException;
  */
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
-        // Register a task
-        project.getTasks().register("verify", VerifyTask.class);
-    }
+        TaskProvider<VerifyTask> verifyProvider = project.getTasks()
+                .register("verify", VerifyTask.class);
 
-    private void version() {
-        Runtime rt = Runtime.getRuntime();
-        try {
-            Process pr = rt.exec("dafny --version");
-            int result = pr.waitFor();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int read;
-            while (0 < (read = pr.getInputStream().read(buffer))) {
-                baos.write(buffer, 0, read);
-            }
-            System.out.println("Dafny version: " + baos.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        verifyProvider.configure(validateTask -> {
+            validateTask.setClasspath(project.getConfigurations().getByName("compileClasspath"));
+        });
     }
 }

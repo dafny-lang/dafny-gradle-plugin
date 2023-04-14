@@ -2,6 +2,8 @@ package dafny.gradle.plugin;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
@@ -14,8 +16,21 @@ public abstract class VerifyTask extends DefaultTask {
     @InputDirectory
     public abstract DirectoryProperty getSourceDir();
 
+    private FileCollection classpath;
+
+    @Classpath
+    public FileCollection getClasspath() {
+        return classpath;
+    }
+
+    public void setClasspath(FileCollection configuration) {
+        this.classpath = configuration;
+    }
+
     @TaskAction
     public void verify() {
+        System.out.println("classpath: " + getClasspath().getFiles());
+
         Runtime rt = Runtime.getRuntime();
         try {
             String args = getSourceDir()
@@ -34,7 +49,7 @@ public abstract class VerifyTask extends DefaultTask {
             while (0 < (read = pr.getInputStream().read(buffer))) {
                 baos.write(buffer, 0, read);
             }
-            System.out.println(baos.toString());
+            System.out.println(baos);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {

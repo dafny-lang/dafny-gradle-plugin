@@ -33,10 +33,4 @@ class DafnyPluginFunctionalTest {
         // Verify the result
         assertTrue(result.getOutput().contains("Dafny version:"));
     }
-
-    private void writeString(File file, String string) throws IOException {
-        try (Writer writer = new FileWriter(file)) {
-            writer.write(string);
-        }
-    }
 }
