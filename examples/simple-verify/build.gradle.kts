@@ -1,5 +1,5 @@
 plugins {
-    id("dafny.gradle.plugin.greeting")
+    id("org.dafny-lang.dafny")
     `java-library`
 }
 

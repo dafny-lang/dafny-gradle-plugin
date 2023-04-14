@@ -24,7 +24,7 @@ dependencies {
 gradlePlugin {
     // Define the plugin
     val greeting by plugins.creating {
-        id = "dafny.gradle.plugin.greeting"
+        id = "org.dafny-lang.dafny"
         implementationClass = "dafny.gradle.plugin.DafnyPlugin"
     }
 }

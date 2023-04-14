@@ -50,6 +50,8 @@ public abstract class VerifyTask extends DefaultTask {
                 baos.write(buffer, 0, read);
             }
             System.out.println(baos);
+
+            // TODO: build to Java, attach <project>.doo file
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
