@@ -40,6 +40,9 @@ public abstract class VerifyTask extends DefaultTask {
                     .map(f -> f.getPath())
                     .collect(Collectors.joining(" "));
 
+            // TODO: collect *.doo files from the classpath,
+            // unzip and add --library arguments
+
             Process pr = rt.exec("dafny verify " + args);
 
             int result = pr.waitFor();

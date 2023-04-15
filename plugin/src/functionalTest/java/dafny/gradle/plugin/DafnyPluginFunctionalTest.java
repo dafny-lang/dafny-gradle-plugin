@@ -21,13 +21,26 @@ class DafnyPluginFunctionalTest {
     @TempDir
     File projectDir;
 
-    @Test void canRunTask() throws IOException {
+    @Test void canVerify() throws IOException {
         // Run the build
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
         runner.withArguments("verify");
         runner.withProjectDir(new File("../examples/simple-verify"));
+        BuildResult result = runner.build();
+
+        // Verify the result
+        assertTrue(result.getOutput().contains("Dafny version:"));
+    }
+
+    @Test void canReferenceDependencies() throws IOException {
+        // Run the build
+        GradleRunner runner = GradleRunner.create();
+        runner.forwardOutput();
+        runner.withPluginClasspath();
+        runner.withArguments("verify");
+        runner.withProjectDir(new File("../examples/multi-project"));
         BuildResult result = runner.build();
 
         // Verify the result

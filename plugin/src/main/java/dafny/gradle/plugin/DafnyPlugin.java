@@ -6,6 +6,7 @@ package dafny.gradle.plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
 import org.gradle.api.Task;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.internal.impldep.com.google.common.base.Verify;
 
@@ -17,6 +18,9 @@ import java.io.IOException;
  */
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
+        // Ensure that the Java plugin is applied.
+        project.getPluginManager().apply(JavaPlugin.class);
+
         TaskProvider<VerifyTask> verifyProvider = project.getTasks()
                 .register("verify", VerifyTask.class);
 
