@@ -7,7 +7,7 @@ dependencies {
 }
 
 tasks {
-    verify {
+    dafnyTranslate {
         sourceDir.set(file("src"))
     }
 }

@@ -5,13 +5,10 @@ package dafny.gradle.plugin;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
-import org.gradle.api.Task;
+import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.internal.impldep.com.google.common.base.Verify;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.gradle.language.jvm.tasks.ProcessResources;
 
 /**
  * A simple 'hello world' plugin.
@@ -21,11 +18,15 @@ public class DafnyPlugin implements Plugin<Project> {
         // Ensure that the Java plugin is applied.
         project.getPluginManager().apply(JavaPlugin.class);
 
-        TaskProvider<VerifyTask> verifyProvider = project.getTasks()
-                .register("verify", VerifyTask.class);
+        TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
+                .register("dafnyTranslate", DafnyTranslateTask.class);
 
-        verifyProvider.configure(validateTask -> {
-            validateTask.setClasspath(project.getConfigurations().getByName("compileClasspath"));
+        dafnyTranslateProvider.configure(dafnyTranslateTask -> {
+            dafnyTranslateTask.setClasspath(project.getConfigurations().getByName("compileClasspath"));
         });
+
+        ProcessResources task = project.getTasks().withType(ProcessResources.class).getByName("processResources");
+        task.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
+        task.dependsOn(dafnyTranslateProvider);
     }
 }

@@ -8,13 +8,8 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    // Just for e.g.
-    implementation("software.amazon.smithy:smithy-model:1.28.0")
-}
-
 tasks {
-    verify {
+    dafnyTranslate {
         sourceDir.set(file("src"))
     }
 }

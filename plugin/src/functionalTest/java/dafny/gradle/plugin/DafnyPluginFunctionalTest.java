@@ -26,7 +26,7 @@ class DafnyPluginFunctionalTest {
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
-        runner.withArguments("verify");
+        runner.withArguments("build");
         runner.withProjectDir(new File("../examples/simple-verify"));
         BuildResult result = runner.build();
 
@@ -39,7 +39,7 @@ class DafnyPluginFunctionalTest {
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
-        runner.withArguments("verify");
+        runner.withArguments("build");
         runner.withProjectDir(new File("../examples/multi-project"));
         BuildResult result = runner.build();
 
