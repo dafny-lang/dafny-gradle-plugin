@@ -9,5 +9,5 @@ dependencies {
 }
 
 dafny {
-    optionsMap.put("unicode-char", "false")
+    optionsMap.put("unicode-char", false)
 }
