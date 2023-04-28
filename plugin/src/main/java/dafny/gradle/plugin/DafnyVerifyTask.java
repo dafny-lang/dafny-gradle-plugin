@@ -1,17 +1,24 @@
 package dafny.gradle.plugin;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.internal.FilePropertyContainer;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.jvm.tasks.Jar;
+import org.gradle.internal.enterprise.test.FileProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,32 +31,29 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
-public abstract class DafnyTranslateTask extends DafnyBaseTask {
+public abstract class DafnyVerifyTask extends DafnyBaseTask {
 
     @OutputFile
-    public abstract RegularFileProperty getDooFile();
+    public abstract ConfigurableFileCollection getSourceFiles();
 
     @OutputFile
-    public abstract DirectoryProperty getOutputPath();
+    public abstract RegularFileProperty getOutputPath();
 
     @TaskAction
-    public void translateToJava() throws IOException, InterruptedException {
+    public void verify() throws IOException, InterruptedException {
         List<String> args = new ArrayList<>();
-        args.add("translate");
-        args.add("java");
-        args.add(getDooFile().get().getAsFile().getPath());
+        args.add("build");
+        args.add("-t:lib");
+        for (var file : getSourceFiles().getFiles()) {
+            args.add(file.getPath());
+        }
         args.addAll(getCommonArguments());
         args.add("-o");
-        // TODO: Put this somewhere temporary and copy to actual Jar source
         args.add(getOutputPath().get().getAsFile().getPath());
 
         invokeDafnyCLI(args);
-
-        // TODO: copy doo file into META-INF and add to Jar task somehow
-//        getProject().getTasks().withType(Jar.class, task -> {
-//            task.from("src/main/dafny/timesTwo-java").include("META-INF/Program.doo");
-//        });
     }
 }

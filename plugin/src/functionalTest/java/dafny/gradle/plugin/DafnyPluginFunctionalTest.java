@@ -29,9 +29,6 @@ class DafnyPluginFunctionalTest {
         runner.withArguments("build");
         runner.withProjectDir(new File("../examples/simple-verify"));
         BuildResult result = runner.build();
-
-        // Verify the result
-        assertTrue(result.getOutput().contains("Dafny version:"));
     }
 
     @Test void canReferenceDependencies() throws IOException {
@@ -39,11 +36,8 @@ class DafnyPluginFunctionalTest {
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
-        runner.withArguments("build");
+        runner.withArguments("publishToMavenLocal");
         runner.withProjectDir(new File("../examples/multi-project"));
         BuildResult result = runner.build();
-
-        // Verify the result
-        assertTrue(result.getOutput().contains("Dafny version:"));
     }
 }

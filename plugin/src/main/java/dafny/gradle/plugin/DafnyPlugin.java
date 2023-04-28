@@ -6,23 +6,37 @@ package dafny.gradle.plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
 import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
-/**
- * A simple 'hello world' plugin.
- */
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
         // Ensure that the Java plugin is applied.
         project.getPluginManager().apply(JavaPlugin.class);
 
-        TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
-                .register("dafnyTranslate", DafnyTranslateTask.class);
+        DafnyExtension extension =
+                project.getExtensions().create("dafny", DafnyExtension.class);
 
+        TaskProvider<DafnyVerifyTask> dafnyVerifyProvider = project.getTasks()
+                .register("verifyDafny", DafnyVerifyTask.class);
+        TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
+                .register("translateDafnyToJava", DafnyTranslateTask.class);
+
+        // TODO: Configurable file collection for Dafny source files
+        FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
+                t.include("**/*.dfy").include("**/*.doo"));
+
+        dafnyVerifyProvider.configure(dafnyVerifyTask -> {
+            dafnyVerifyTask.getSourceFiles().setFrom(dafnySourceFiles);
+            dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyVerifyTask.getOptions().set(extension.getOptions());
+        });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
-            dafnyTranslateTask.setClasspath(project.getConfigurations().getByName("compileClasspath"));
+            dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
+            dafnyTranslateTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
         });
 
         ProcessResources task = project.getTasks().withType(ProcessResources.class).getByName("processResources");

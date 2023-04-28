@@ -15,9 +15,9 @@ class DafnyPluginTest {
     @Test void pluginRegistersATask() {
         // Create a test project and apply the plugin
         Project project = ProjectBuilder.builder().build();
-        project.getPlugins().apply("dafny.gradle.plugin.greeting");
+        project.getPlugins().apply("org.dafny.dafny");
 
         // Verify the result
-        assertNotNull(project.getTasks().findByName("verify"));
+        assertNotNull(project.getTasks().findByName("verifyDafny"));
     }
 }

@@ -9,7 +9,12 @@
 plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
+
+    `maven-publish`
 }
+
+group = "org.dafny"
+version = "0.1.0"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -23,9 +28,11 @@ dependencies {
 
 gradlePlugin {
     // Define the plugin
-    val greeting by plugins.creating {
-        id = "org.dafny-lang.dafny"
-        implementationClass = "dafny.gradle.plugin.DafnyPlugin"
+    plugins {
+        create("org.dafny.dafny") {
+            id = "org.dafny.dafny"
+            implementationClass = "dafny.gradle.plugin.DafnyPlugin"
+        }
     }
 }
 
