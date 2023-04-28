@@ -24,6 +24,8 @@ public abstract class DafnyBaseTask extends DefaultTask {
     public abstract Property<FileCollection> getClasspath();
 
     protected void invokeDafnyCLI(List<String> args) throws InterruptedException, IOException {
+        getProject().getLogger().info("Executing Dafny CLI: " + String.join(" ", args));
+
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("dafny " + String.join(" ", args));
         int result = pr.waitFor();

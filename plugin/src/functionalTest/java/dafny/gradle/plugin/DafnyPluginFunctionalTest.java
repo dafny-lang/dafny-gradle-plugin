@@ -43,4 +43,15 @@ class DafnyPluginFunctionalTest {
         runner.withProjectDir(new File("../examples/multi-project"));
         BuildResult result = runner.build();
     }
+
+    // Expected to fail because the producer and consumer use different values of --unicode-char
+    @Test void failsOnIncompatibleDependencies() throws IOException {
+        // Run the build
+        GradleRunner runner = GradleRunner.create();
+        runner.forwardOutput();
+        runner.withPluginClasspath();
+        runner.withArguments("clean", "build");
+        runner.withProjectDir(new File("../examples/multi-project-incompatible"));
+        assertThrows(UnexpectedBuildFailure.class, runner::build);
+    }
 }

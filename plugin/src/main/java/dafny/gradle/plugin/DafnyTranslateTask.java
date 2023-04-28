@@ -45,15 +45,5 @@ public abstract class DafnyTranslateTask extends DafnyBaseTask {
         // Annoyingly, Dafny adds "-java" to the directory, so rename it
         File outputDirWithJava = new File(outputDir.getParentFile(), outputDir.getName() + "-java");
         outputDirWithJava.renameTo(outputDir);
-
-        // Attach the doo file in META-INF
-        File metaInfDir = new File(outputDir, "META-INF");
-        metaInfDir.mkdirs();
-        File dooFileInMetaInf = new File(metaInfDir, "Program.doo");
-        try (InputStream dooIn = new FileInputStream(dooFile)) {
-            try (OutputStream dooOut = new FileOutputStream(dooFileInMetaInf)) {
-                Utils.drain(dooIn, dooOut);
-            }
-        }
     }
 }

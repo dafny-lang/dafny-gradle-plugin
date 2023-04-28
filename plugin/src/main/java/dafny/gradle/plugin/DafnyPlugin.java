@@ -19,9 +19,13 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class DafnyPlugin implements Plugin<Project> {
+
+    public static final String META_INF_DOO_FILE_NAME = "DafnyProgram.doo";
+
     public void apply(Project project) {
         // Ensure that the Java plugin is applied.
-        // TODO: make this optional as suggested by documentation
+        // TODO: make this optional as suggested by documentation:
+        // https://docs.gradle.org/current/userguide/implementing_gradle_plugins.html#reacting_to_plugins
         project.getPluginManager().apply(JavaPlugin.class);
 
         DafnyExtension extension =
@@ -32,41 +36,42 @@ public class DafnyPlugin implements Plugin<Project> {
         TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
                 .register("translateDafnyToJava", DafnyTranslateTask.class);
 
-        // TODO: Configurable file collection for Dafny source files,
-        // with doo file location as output
+        // TODO: Configurable file collection in extension for Dafny source files,
+        // possibly sourceSet with doo file location as output.
         FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
                 t.include("**/*.dfy").include("**/*.doo"));
-        File dooFile = new File(project.getBuildDir(), "Program.doo");
+        // TODO: More specific location
+        File dooFile = new File(project.getBuildDir(), META_INF_DOO_FILE_NAME);
+        // TODO: build/generated/sources/... instead?
         File translatedJavaDir = new File(project.getBuildDir(), "generated-from-dafny");
 
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
             dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
             dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
-            dafnyVerifyTask.getOptions().set(extension.getOptions());
+            dafnyVerifyTask.getOptions().set(extension.getOptionsMap());
             dafnyVerifyTask.getOutputPath().set(dooFile);
         });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
+
             dafnyTranslateTask.getDooFile().set(dooFile);
             dafnyTranslateTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyTranslateTask.getOptions().set(extension.getOptionsMap());
             dafnyTranslateTask.getOutputPath().set(translatedJavaDir);
         });
 
+        // Register the Dafny-generated code to be compiled
         JavaPluginExtension javaExt = project.getExtensions().findByType(JavaPluginExtension.class);
-        SourceSet main = javaExt.getSourceSets().findByName("main");
-        main.getJava().srcDir(translatedJavaDir);
-        project.getTasks().withType(JavaCompile.class, javaCompile -> {
-            javaCompile.dependsOn(dafnyTranslateProvider);
-        });
+        javaExt.getSourceSets().findByName("main").getJava().srcDir(translatedJavaDir);
 
+        // Make sure the Dafny-generated code is generated before compiling
+        project.getTasks().withType(JavaCompile.class, javaCompile ->
+            javaCompile.dependsOn(dafnyTranslateProvider)
+        );
+
+        // Embed the .doo file in the .jar file's META-INF
         project.getTasks().withType(Jar.class, jarTask -> {
-            // TODO: Not sure why this is necessary
-            jarTask.dependsOn(dafnyTranslateProvider);
             jarTask.metaInf(metaInf -> metaInf.from(dooFile.getPath()));
         });
-
-        ProcessResources task = project.getTasks().withType(ProcessResources.class).getByName("processResources");
-        task.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
-        task.dependsOn(dafnyTranslateProvider);
     }
 }

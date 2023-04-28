@@ -24,7 +24,7 @@ public class Utils {
             if (classpathEntry.getName().endsWith(".jar")) {
                 JarFile jarFile = new JarFile(classpathEntry);
                 // TODO: Look for any .doo file, or perhaps use an SPI?
-                ZipEntry dooEntry = jarFile.getEntry("META-INF/Program.doo");
+                ZipEntry dooEntry = jarFile.getEntry("META-INF/" + DafnyPlugin.META_INF_DOO_FILE_NAME);
                 if (dooEntry != null) {
                     InputStream dooStream = jarFile.getInputStream(dooEntry);
                     Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".doo");
@@ -43,7 +43,6 @@ public class Utils {
     public static List<String> getCommonArguments(FileCollection classpath, Map<String, Object> options) throws IOException {
         List<String> args = new ArrayList<>();
 
-        // collect *.doo files from the classpath and add --library arguments
         for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
             args.add(" --library " + dooFile);
         }
