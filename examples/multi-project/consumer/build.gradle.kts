@@ -5,9 +5,3 @@ plugins {
 dependencies {
     implementation(project(":producer"))
 }
-
-tasks {
-    dafnyTranslate {
-        sourceDir.set(file("src"))
-    }
-}

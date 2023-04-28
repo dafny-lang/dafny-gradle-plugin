@@ -1,5 +1,7 @@
 plugins {
     id("org.dafny-lang.dafny")
+
+    `maven-publish`
 }
 
 dependencies {
@@ -17,11 +19,5 @@ sourceSets {
 tasks.jar {
     from("src/main/dafny/timesTwo-java") {
         include("META-INF/Program.doo")
-    }
-}
-
-tasks {
-    dafnyTranslate {
-        sourceDir.set(file("src"))
     }
 }
