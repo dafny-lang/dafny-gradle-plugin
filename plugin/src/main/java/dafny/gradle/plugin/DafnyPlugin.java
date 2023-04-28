@@ -10,6 +10,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.jvm.tasks.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.nio.file.Path;
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
         // Ensure that the Java plugin is applied.
+        // TODO: make this optional as suggested by documentation
         project.getPluginManager().apply(JavaPlugin.class);
 
         DafnyExtension extension =
@@ -33,9 +35,9 @@ public class DafnyPlugin implements Plugin<Project> {
         FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
                 t.include("**/*.dfy").include("**/*.doo"));
         File dooFile = new File(project.getBuildDir(), "program.doo");
+        File translatedJavaDir = new File(project.getBuildDir(), "generated-from-dafny");
 
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
-            System.out.println(dafnySourceFiles.getFiles());
             dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
             dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
             dafnyVerifyTask.getOptions().set(extension.getOptions());
@@ -43,7 +45,14 @@ public class DafnyPlugin implements Plugin<Project> {
         });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
+            dafnyTranslateTask.getDooFile().set(dooFile);
             dafnyTranslateTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyTranslateTask.getOutputPath().set(translatedJavaDir);
+        });
+
+        project.getTasks().withType(Jar.class, jarTask -> {
+            jarTask.from(translatedJavaDir);
+            jarTask.from(dooFile).into("META-INF");
         });
 
         ProcessResources task = project.getTasks().withType(ProcessResources.class).getByName("processResources");

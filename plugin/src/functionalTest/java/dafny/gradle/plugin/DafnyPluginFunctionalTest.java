@@ -39,7 +39,7 @@ class DafnyPluginFunctionalTest {
         GradleRunner runner = GradleRunner.create();
         runner.forwardOutput();
         runner.withPluginClasspath();
-        runner.withArguments("publishToMavenLocal");
+        runner.withArguments("build");
         runner.withProjectDir(new File("../examples/multi-project"));
         BuildResult result = runner.build();
     }
