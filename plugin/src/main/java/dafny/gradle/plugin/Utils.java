@@ -27,7 +27,7 @@ public class Utils {
                 ZipEntry dooEntry = jarFile.getEntry("META-INF/Program.doo");
                 if (dooEntry != null) {
                     InputStream dooStream = jarFile.getInputStream(dooEntry);
-                    Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".dfy");
+                    Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".doo");
                     OutputStream extractedDooStream = new FileOutputStream(extractedDoo.toFile());
                     drain(dooStream, extractedDooStream);
 
