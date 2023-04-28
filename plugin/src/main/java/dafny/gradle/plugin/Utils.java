@@ -1,5 +1,7 @@
 package dafny.gradle.plugin;
 
+import org.gradle.api.file.FileCollection;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,13 +13,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 public class Utils {
 
-    public static List<String> DooFilesForClasspath(Collection<File> classpath) throws IOException {
+    public static List<String> dooFilesForClasspath(Collection<File> classpath) throws IOException {
         List<String> dooFiles = new ArrayList<>();
         for (File classpathEntry : classpath) {
             if (classpathEntry.getName().endsWith(".jar")) {
@@ -36,6 +39,21 @@ public class Utils {
         }
 
         return dooFiles;
+    }
+
+    public static List<String> getCommonArguments(FileCollection classpath, Map<String, Object> options) throws IOException {
+        List<String> args = new ArrayList<>();
+
+        // collect *.doo files from the classpath and add --library arguments
+        for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
+            args.add(" --library " + dooFile);
+        }
+
+        for (var entry : options.entrySet()) {
+            args.add(" --" + entry.getKey() + ":" + entry.getValue());
+        }
+
+        return args;
     }
 
     public static void drain(InputStream in, OutputStream out) throws IOException {

@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 
 public abstract class DafnyVerifyTask extends DafnyBaseTask {
 
-    @OutputFile
+    @InputFiles
     public abstract ConfigurableFileCollection getSourceFiles();
 
     @OutputFile
@@ -50,7 +50,7 @@ public abstract class DafnyVerifyTask extends DafnyBaseTask {
         for (var file : getSourceFiles().getFiles()) {
             args.add(file.getPath());
         }
-        args.addAll(getCommonArguments());
+        args.addAll(Utils.getCommonArguments(getClasspath().get(), getOptions().get()));
         args.add("-o");
         args.add(getOutputPath().get().getAsFile().getPath());
 

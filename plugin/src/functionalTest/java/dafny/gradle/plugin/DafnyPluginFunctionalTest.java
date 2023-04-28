@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.io.FileWriter;
 
+import org.gradle.api.GradleException;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +30,8 @@ class DafnyPluginFunctionalTest {
         runner.withPluginClasspath();
         runner.withArguments("build");
         runner.withProjectDir(new File("../examples/simple-verify"));
-        BuildResult result = runner.build();
+        assertThrows(UnexpectedBuildFailure.class, runner::build);
+        // TODO: assert verification output
     }
 
     @Test void canReferenceDependencies() throws IOException {

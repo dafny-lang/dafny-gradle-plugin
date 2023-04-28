@@ -12,6 +12,9 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
+import java.io.File;
+import java.nio.file.Path;
+
 public class DafnyPlugin implements Plugin<Project> {
     public void apply(Project project) {
         // Ensure that the Java plugin is applied.
@@ -25,14 +28,18 @@ public class DafnyPlugin implements Plugin<Project> {
         TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
                 .register("translateDafnyToJava", DafnyTranslateTask.class);
 
-        // TODO: Configurable file collection for Dafny source files
+        // TODO: Configurable file collection for Dafny source files,
+        // with doo file location as output
         FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
                 t.include("**/*.dfy").include("**/*.doo"));
+        File dooFile = new File(project.getBuildDir(), "program.doo");
 
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
-            dafnyVerifyTask.getSourceFiles().setFrom(dafnySourceFiles);
+            System.out.println(dafnySourceFiles.getFiles());
+            dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
             dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
             dafnyVerifyTask.getOptions().set(extension.getOptions());
+            dafnyVerifyTask.getOutputPath().set(dooFile);
         });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);

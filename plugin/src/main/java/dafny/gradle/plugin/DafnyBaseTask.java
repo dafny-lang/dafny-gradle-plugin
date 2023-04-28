@@ -23,21 +23,6 @@ public abstract class DafnyBaseTask extends DefaultTask {
     @Classpath
     public abstract Property<FileCollection> getClasspath();
 
-    protected List<String> getCommonArguments() throws IOException {
-        List<String> args = new ArrayList<>();
-
-        // collect *.doo files from the classpath and add --library arguments
-        for (var dooFile : Utils.DooFilesForClasspath(getClasspath().get().getFiles())) {
-            args.add(" --library " + dooFile);
-        }
-
-        for (var entry : getOptions().get().entrySet()) {
-            args.add(" --" + entry.getKey() + ":" + entry.getValue());
-        }
-
-        return args;
-    }
-
     protected void invokeDafnyCLI(List<String> args) throws InterruptedException, IOException {
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("dafny " + String.join(" ", args));

@@ -8,5 +8,4 @@ import org.gradle.api.tasks.SourceSetContainer;
 public abstract class DafnyExtension {
 
     abstract public MapProperty<String, Object> getOptions();
-
 }

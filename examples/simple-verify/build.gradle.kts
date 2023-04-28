@@ -1,5 +1,5 @@
 plugins {
-    id("org.dafny-lang.dafny")
+    id("org.dafny.dafny")
 }
 
 repositories {
