@@ -3,7 +3,6 @@ package dafny.gradle.plugin;
 import org.gradle.api.file.FileCollection;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 public class Utils {
@@ -25,6 +23,7 @@ public class Utils {
         for (File classpathEntry : classpath) {
             if (classpathEntry.getName().endsWith(".jar")) {
                 JarFile jarFile = new JarFile(classpathEntry);
+                // TODO: Look for any .doo file, or perhaps use an SPI?
                 ZipEntry dooEntry = jarFile.getEntry("META-INF/Program.doo");
                 if (dooEntry != null) {
                     InputStream dooStream = jarFile.getInputStream(dooEntry);

@@ -8,8 +8,10 @@ import org.gradle.api.Plugin;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
@@ -34,7 +36,7 @@ public class DafnyPlugin implements Plugin<Project> {
         // with doo file location as output
         FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
                 t.include("**/*.dfy").include("**/*.doo"));
-        File dooFile = new File(project.getBuildDir(), "program.doo");
+        File dooFile = new File(project.getBuildDir(), "Program.doo");
         File translatedJavaDir = new File(project.getBuildDir(), "generated-from-dafny");
 
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
@@ -50,9 +52,17 @@ public class DafnyPlugin implements Plugin<Project> {
             dafnyTranslateTask.getOutputPath().set(translatedJavaDir);
         });
 
+        JavaPluginExtension javaExt = project.getExtensions().findByType(JavaPluginExtension.class);
+        SourceSet main = javaExt.getSourceSets().findByName("main");
+        main.getJava().srcDir(translatedJavaDir);
+        project.getTasks().withType(JavaCompile.class, javaCompile -> {
+            javaCompile.dependsOn(dafnyTranslateProvider);
+        });
+
         project.getTasks().withType(Jar.class, jarTask -> {
-            jarTask.from(translatedJavaDir);
-            jarTask.from(dooFile).into("META-INF");
+            // TODO: Not sure why this is necessary
+            jarTask.dependsOn(dafnyTranslateProvider);
+            jarTask.metaInf(metaInf -> metaInf.from(dooFile.getPath()));
         });
 
         ProcessResources task = project.getTasks().withType(ProcessResources.class).getByName("processResources");
