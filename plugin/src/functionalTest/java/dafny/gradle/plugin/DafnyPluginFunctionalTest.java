@@ -54,4 +54,14 @@ class DafnyPluginFunctionalTest {
         runner.withProjectDir(new File("../examples/multi-project-incompatible"));
         assertThrows(UnexpectedBuildFailure.class, runner::build);
     }
+
+    @Test void succeedsWithNoDafnySourceFiles() throws IOException {
+        // Run the build
+        GradleRunner runner = GradleRunner.create();
+        runner.forwardOutput();
+        runner.withPluginClasspath();
+        runner.withArguments("clean", "build");
+        runner.withProjectDir(new File("../examples/no-dafny"));
+        BuildResult result = runner.build();
+    }
 }

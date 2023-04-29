@@ -42,8 +42,8 @@ in a custom extension:
 
 ```kotlin
 dafny {
-    optionsMap.put("unicode-char", true)
-    optionsMap.put("")
+    optionsMap.put("unicode-char", false)
+    optionsMap.put("isolate-assertions", true)
 }
 ```
 

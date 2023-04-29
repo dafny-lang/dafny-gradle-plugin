@@ -32,7 +32,11 @@ public abstract class DafnyBaseTask extends DefaultTask {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Utils.drain(pr.getInputStream(), baos);
-        System.out.println(baos);
+        getProject().getLogger().info(baos.toString());
+
+        baos = new ByteArrayOutputStream();
+        Utils.drain(pr.getErrorStream(), baos);
+        getProject().getLogger().error(baos.toString());
 
         if (result != 0) {
             throw new GradleException("Dafny CLI returned a non-zero error code: " + result);
