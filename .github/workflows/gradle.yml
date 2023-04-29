@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
+          distribution: 'corretto'
       - name: Set up Dafny
         uses: dafny-lang/setup-dafny-action@v1.6.1
         with:
