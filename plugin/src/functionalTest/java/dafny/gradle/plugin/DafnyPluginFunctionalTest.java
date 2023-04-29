@@ -12,6 +12,7 @@ import org.gradle.api.GradleException;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,13 +26,17 @@ class DafnyPluginFunctionalTest {
 
     @Test void canVerify() throws IOException {
         // Run the build
-        GradleRunner runner = GradleRunner.create();
-        runner.forwardOutput();
-        runner.withPluginClasspath();
-        runner.withArguments("build");
-        runner.withProjectDir(new File("../examples/simple-verify"));
-        assertThrows(UnexpectedBuildFailure.class, runner::build);
-        // TODO: assert verification output
+        BuildResult result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("build")
+            .withProjectDir(new File("../examples/simple-verify"))
+            .buildAndFail();
+
+        Assertions.assertTrue(result.getOutput().contains(
+                "examples/simple-verify/src/main/dafny/simple.dfy(2,15): Error: assertion might not hold"));
+        Assertions.assertTrue(result.getOutput().contains(
+                "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,15): Error: assertion might not hold"));
     }
 
     @Test void canReferenceDependencies() throws IOException {
