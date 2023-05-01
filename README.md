@@ -22,7 +22,7 @@ dafny {
 }
 
 dependencies {
-  implementation("org.dafny:DafnyRuntime:4.1.0")
+    implementation("org.dafny:DafnyRuntime:4.1.0")
 }
 
 ```
