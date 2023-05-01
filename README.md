@@ -1,8 +1,10 @@
 # Dafny Gradle Plugin
 
 This plugin offers tight integration of the 
-[Dafny verification-aware programming language](httsp://dafny.org) with Java,
-and a robust approach to distributing and managing Dafny dependencies
+[Dafny verification-aware programming language](httsp://dafny.org) with Java:
+automatically verifying Dafny source code and compiling it to Java source code,
+which the Java plugin will then build together with any hand-written Java in the project.
+It also provides a robust approach to distributing and managing Dafny dependencies
 through Gradle-supported repositories such as Maven Central.
 
 ## Installation
@@ -17,6 +19,10 @@ plugins {
 
 dafny {
     dafnyVersion.set("4.1.0")
+}
+
+dependencies {
+  implementation("org.dafny:DafnyRuntime:4.1.0")
 }
 
 ```
@@ -43,7 +49,7 @@ themselves as libraries through Gradle-supported repositories such as Maven cent
 For details see [this example](examples/multi-project/).
 
 Projects can also configure command-line options to pass to the Dafny CLI
-in a custom extension:
+in the `dafny` extension:
 
 ```kotlin
 dafny {
