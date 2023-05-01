@@ -69,9 +69,9 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
-            .withProjectDir(new File("../examples/no-dafny"))
+            .withProjectDir(new File("../examples/wrong-dafny-version"))
             .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
-                "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,15): Error: assertion might not hold"));
+                "Incorrect Dafny version: expected 2.3.0, found"));
     }
 }

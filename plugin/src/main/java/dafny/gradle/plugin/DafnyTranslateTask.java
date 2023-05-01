@@ -31,6 +31,10 @@ public abstract class DafnyTranslateTask extends DafnyBaseTask {
         var dooFile = getDooFile().get().getAsFile();
         var outputDir = getOutputPath().get().getAsFile();
 
+        if (!dooFile.exists()) {
+            return;
+        }
+
         List<String> args = new ArrayList<>();
         args.add("translate");
         args.add("java");

@@ -20,6 +20,12 @@ public abstract class DafnyVerifyTask extends DafnyBaseTask {
 
     @TaskAction
     public void verify() throws IOException, InterruptedException {
+        if (getSourceFiles().isEmpty()) {
+            // TODO: I'm not sure why Gradle doesn't mark this task with NO-SOURCE
+            // and skip it automatically, given the @InputFiles annotation.
+            return;
+        }
+
         List<String> args = new ArrayList<>();
         args.add("build");
         args.add("-t:lib");
