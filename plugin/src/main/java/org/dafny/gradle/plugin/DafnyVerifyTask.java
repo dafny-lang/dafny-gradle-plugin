@@ -29,12 +29,13 @@ public abstract class DafnyVerifyTask extends DafnyBaseTask {
         List<String> args = new ArrayList<>();
         args.add("build");
         args.add("-t:lib");
-        for (var file : getSourceFiles().getFiles()) {
-            args.add(file.getPath());
-        }
         args.addAll(Utils.getCommonArguments(getClasspath().get(), getOptions().get()));
         args.add("-o");
         args.add(getOutputPath().get().getAsFile().getPath());
+        args.add("--");
+        for (var file : getSourceFiles().getFiles()) {
+            args.add(file.getPath());
+        }
 
         invokeDafnyCLI(args);
     }

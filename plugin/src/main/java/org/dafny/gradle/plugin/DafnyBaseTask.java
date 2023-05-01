@@ -25,7 +25,7 @@ public abstract class DafnyBaseTask extends DefaultTask {
     public record DafnyCLIResult(int exitCode, String stdout, String stderr) {}
 
     protected DafnyCLIResult invokeDafnyCLI(List<String> args) throws InterruptedException, IOException {
-        getProject().getLogger().info("Executing Dafny CLI: " + String.join(" ", args));
+        getProject().getLogger().info("Executing Dafny CLI with args: " + String.join(" ", args));
 
         // TODO: This is probably a nice utility for managing subprocesses buried somewhere in the Gradle framework
         // we could reuse, especially to avoid potential deadlock on failing to read the output streams.
