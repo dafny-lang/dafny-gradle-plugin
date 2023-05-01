@@ -8,5 +8,5 @@ repositories {
 }
 
 dafny {
-    dafnyVersion.set("4.1.0")
+    dafnyVersion.set("2.3.0")
 }

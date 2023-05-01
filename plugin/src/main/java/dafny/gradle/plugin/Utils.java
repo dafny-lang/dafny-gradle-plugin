@@ -18,6 +18,7 @@ import java.util.zip.ZipEntry;
 
 public class Utils {
 
+    // TODO: Shape this as something Gradle can cache for us
     public static List<String> dooFilesForClasspath(Collection<File> classpath) throws IOException {
         List<String> dooFiles = new ArrayList<>();
         for (File classpathEntry : classpath) {

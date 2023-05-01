@@ -21,11 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * A simple functional test for the 'dafny.gradle.plugin.greeting' plugin.
  */
 class DafnyPluginFunctionalTest {
-    @TempDir
-    File projectDir;
 
     @Test void canVerify() throws IOException {
-        // Run the build
         BuildResult result = GradleRunner.create()
             .forwardOutput()
             .withPluginClasspath()
@@ -40,33 +37,41 @@ class DafnyPluginFunctionalTest {
     }
 
     @Test void canReferenceDependencies() throws IOException {
-        // Run the build
-        GradleRunner runner = GradleRunner.create();
-        runner.forwardOutput();
-        runner.withPluginClasspath();
-        runner.withArguments("clean", "build");
-        runner.withProjectDir(new File("../examples/multi-project"));
-        BuildResult result = runner.build();
+        BuildResult result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("clean", "build")
+            .withProjectDir(new File("../examples/multi-project"))
+            .build();
     }
 
     // Expected to fail because the producer and consumer use different values of --unicode-char
     @Test void failsOnIncompatibleDependencies() throws IOException {
-        // Run the build
-        GradleRunner runner = GradleRunner.create();
-        runner.forwardOutput();
-        runner.withPluginClasspath();
-        runner.withArguments("clean", "build");
-        runner.withProjectDir(new File("../examples/multi-project-incompatible"));
-        assertThrows(UnexpectedBuildFailure.class, runner::build);
+        BuildResult result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("clean", "build")
+            .withProjectDir(new File("../examples/multi-project-incompatible"))
+            .buildAndFail();
     }
 
     @Test void succeedsWithNoDafnySourceFiles() throws IOException {
-        // Run the build
-        GradleRunner runner = GradleRunner.create();
-        runner.forwardOutput();
-        runner.withPluginClasspath();
-        runner.withArguments("clean", "build");
-        runner.withProjectDir(new File("../examples/no-dafny"));
-        BuildResult result = runner.build();
+        BuildResult result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("clean", "build")
+            .withProjectDir(new File("../examples/no-dafny"))
+            .build();
+    }
+
+    @Test void failsOnWrongDafnyVersion() throws IOException {
+        BuildResult result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("clean", "build")
+            .withProjectDir(new File("../examples/no-dafny"))
+            .buildAndFail();
+        Assertions.assertTrue(result.getOutput().contains(
+                "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,15): Error: assertion might not hold"));
     }
 }

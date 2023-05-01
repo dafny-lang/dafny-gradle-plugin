@@ -6,3 +6,7 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+
+dafny {
+    dafnyVersion.set("4.1.0")
+}

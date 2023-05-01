@@ -3,6 +3,7 @@
  */
 package dafny.gradle.plugin;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
 import org.gradle.api.file.DuplicatesStrategy;
@@ -31,6 +32,8 @@ public class DafnyPlugin implements Plugin<Project> {
         DafnyExtension extension =
                 project.getExtensions().create("dafny", DafnyExtension.class);
 
+        TaskProvider<DafnyVersionCheckTask> dafnyVersionCheckProvider = project.getTasks()
+                .register("checkDafnyVersion", DafnyVersionCheckTask.class);
         TaskProvider<DafnyVerifyTask> dafnyVerifyProvider = project.getTasks()
                 .register("verifyDafny", DafnyVerifyTask.class);
         TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
@@ -42,16 +45,30 @@ public class DafnyPlugin implements Plugin<Project> {
                 t.include("**/*.dfy").include("**/*.doo"));
         // TODO: More specific location
         File dooFile = new File(project.getBuildDir(), META_INF_DOO_FILE_NAME);
-        // TODO: build/generated/sources/... instead?
-        File translatedJavaDir = new File(project.getBuildDir(), "generated-from-dafny");
+        // This is not automatically picked up as a source directory for Java compilation,
+        // so we have to add it below, but it still seems like a good, idiomatic location.
+        File translatedJavaDir = project.getBuildDir().toPath()
+                .resolve("generated")
+                .resolve("sources")
+                .resolve("fromDafny")
+                .resolve("java")
+                .resolve("main")
+                .toFile();
 
+        dafnyVersionCheckProvider.configure(dafnyVersionCheckTask -> {
+            dafnyVersionCheckTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyVersionCheckTask.getRequiredVersion().set(extension.getDafnyVersion());
+        });
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
+            dafnyVerifyTask.dependsOn(dafnyVersionCheckProvider);
+
             dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
             dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
             dafnyVerifyTask.getOptions().set(extension.getOptionsMap());
             dafnyVerifyTask.getOutputPath().set(dooFile);
         });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
+            dafnyTranslateTask.dependsOn(dafnyVersionCheckProvider);
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
 
             dafnyTranslateTask.getDooFile().set(dooFile);

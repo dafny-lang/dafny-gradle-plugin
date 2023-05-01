@@ -1,5 +1,10 @@
 plugins {
     id("org.dafny.dafny")
+    application
+}
+
+dafny {
+    dafnyVersion.set("4.1.0")
 }
 
 dependencies {
