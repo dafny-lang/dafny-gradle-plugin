@@ -3,7 +3,7 @@
 This plugin offers tight integration of the 
 [Dafny verification-aware programming language](httsp://dafny.org) with Java,
 and a robust approach to distributing and managing Dafny dependencies
-through Gradle-supported repositories such as Maven central.
+through Gradle-supported repositories such as Maven Central.
 
 ## Installation
 
