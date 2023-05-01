@@ -53,6 +53,8 @@ class DafnyPluginFunctionalTest {
             .withArguments("clean", "build")
             .withProjectDir(new File("../examples/multi-project-incompatible"))
             .buildAndFail();
+        Assertions.assertTrue(result.getOutput().contains(
+                "--unicode-char is set locally to True, but the library was built with False"));
     }
 
     @Test void succeedsWithNoDafnySourceFiles() throws IOException {
