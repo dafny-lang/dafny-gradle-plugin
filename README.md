@@ -14,6 +14,11 @@ For example:
 plugins {
     id("org.dafny.dafny").version("0.1.0")
 }
+
+dafny {
+    dafnyVersion.set("4.1.0")
+}
+
 ```
 
 ## Documentation
@@ -42,6 +47,8 @@ in a custom extension:
 
 ```kotlin
 dafny {
+    dafnyVersion.set("4.1.0")
+  
     optionsMap.put("unicode-char", false)
     optionsMap.put("isolate-assertions", true)
 }
@@ -52,11 +59,6 @@ dafny {
 * The collection of Dafny files to verify or translate is not yet configurable.
 * The plugin only supports a `main` source set, and only integrates with Java code in the Java plugin's `main` source set.
 * The Dafny CLI is only resolved through the current PATH, and there is no support for bootstrapping it.
-
-## TODO
-
-* Configure the required Dafny version and ensure it matches.
-
 
 ## License
 
