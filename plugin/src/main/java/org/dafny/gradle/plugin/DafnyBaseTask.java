@@ -10,7 +10,9 @@ import org.gradle.api.tasks.Input;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class DafnyBaseTask extends DefaultTask {
 
@@ -28,15 +30,16 @@ public abstract class DafnyBaseTask extends DefaultTask {
         // TODO: This is probably a nice utility for managing subprocesses buried somewhere in the Gradle framework
         // we could reuse, especially to avoid potential deadlock on failing to read the output streams.
         Runtime rt = Runtime.getRuntime();
-        Process pr = rt.exec("dafny " + String.join(" ", args));
+        String[] cmdArgs = Stream.concat(Stream.of("dafny"), args.stream()).toArray(String[]::new);
+        Process pr = rt.exec(cmdArgs);
         int exitCode = pr.waitFor();
 
         ByteArrayOutputStream outBaos = new ByteArrayOutputStream();
-        Utils.drain(pr.getInputStream(), outBaos);
+        pr.getInputStream().transferTo(outBaos);
         String output = outBaos.toString();
 
         ByteArrayOutputStream errBaos = new ByteArrayOutputStream();
-        Utils.drain(pr.getErrorStream(), errBaos);
+        pr.getErrorStream().transferTo(errBaos);
         String error = errBaos.toString();
 
         if (exitCode != 0) {

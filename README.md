@@ -60,6 +60,9 @@ dafny {
 }
 ```
 
+Note there is no support for different Dafny CLI options on a per-file basis.
+We recommend organizing Dafny source into subprojects with the same set of options instead.
+
 ## Known Limitations
 
 * The collection of Dafny files to verify or translate is not yet configurable.

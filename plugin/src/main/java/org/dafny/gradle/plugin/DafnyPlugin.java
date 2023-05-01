@@ -51,14 +51,14 @@ public class DafnyPlugin implements Plugin<Project> {
                 .toFile();
 
         dafnyVersionCheckProvider.configure(dafnyVersionCheckTask -> {
-            dafnyVersionCheckTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyVersionCheckTask.getClasspath().set(Utils.getCompileClasspath(project));
             dafnyVersionCheckTask.getRequiredVersion().set(extension.getDafnyVersion());
         });
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
             dafnyVerifyTask.dependsOn(dafnyVersionCheckProvider);
 
             dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
-            dafnyVerifyTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyVerifyTask.getClasspath().set(Utils.getCompileClasspath(project));
             dafnyVerifyTask.getOptions().set(extension.getOptionsMap());
             dafnyVerifyTask.getOutputPath().set(dooFile);
         });
@@ -67,7 +67,7 @@ public class DafnyPlugin implements Plugin<Project> {
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
 
             dafnyTranslateTask.getDooFile().set(dooFile);
-            dafnyTranslateTask.getClasspath().set(project.getConfigurations().getByName("compileClasspath"));
+            dafnyTranslateTask.getClasspath().set(Utils.getCompileClasspath(project));
             dafnyTranslateTask.getOptions().set(extension.getOptionsMap());
             dafnyTranslateTask.getOutputPath().set(translatedJavaDir);
         });

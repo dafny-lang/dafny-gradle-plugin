@@ -1,5 +1,7 @@
 package org.dafny.gradle.plugin;
 
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 
 import java.io.File;
@@ -18,7 +20,8 @@ import java.util.zip.ZipEntry;
 
 public class Utils {
 
-    // TODO: Shape this as something Gradle can cache for us
+    // TODO: Shape this as something Gradle can cache for us,
+    // which will also ensure these are cleaned up as needed.
     public static List<String> dooFilesForClasspath(Collection<File> classpath) throws IOException {
         List<String> dooFiles = new ArrayList<>();
         for (File classpathEntry : classpath) {
@@ -30,7 +33,7 @@ public class Utils {
                     InputStream dooStream = jarFile.getInputStream(dooEntry);
                     Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".doo");
                     OutputStream extractedDooStream = new FileOutputStream(extractedDoo.toFile());
-                    drain(dooStream, extractedDooStream);
+                    dooStream.transferTo(extractedDooStream);
 
                     dooFiles.add(extractedDoo.toString());
                 }
@@ -45,21 +48,17 @@ public class Utils {
         List<String> args = new ArrayList<>();
 
         for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
-            args.add(" --library " + dooFile);
+            args.add("--library " + dooFile);
         }
 
         for (var entry : options.entrySet()) {
-            args.add(" --" + entry.getKey() + ":" + entry.getValue());
+            args.add("--" + entry.getKey() + ":" + entry.getValue());
         }
 
         return args;
     }
 
-    public static void drain(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[4096];
-        int read;
-        while (0 < (read = in.read(buffer))) {
-            out.write(buffer, 0, read);
-        }
+    public static Configuration getCompileClasspath(Project project) {
+        return project.getConfigurations().getByName("compileClasspath");
     }
 }
