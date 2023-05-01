@@ -1,4 +1,4 @@
-package dafny.gradle.plugin;
+package org.dafny.gradle.plugin;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;

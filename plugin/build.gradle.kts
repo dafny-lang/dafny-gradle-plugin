@@ -31,7 +31,7 @@ gradlePlugin {
     plugins {
         create("org.dafny.dafny") {
             id = "org.dafny.dafny"
-            implementationClass = "dafny.gradle.plugin.DafnyPlugin"
+            implementationClass = "org.dafny.gradle.plugin.DafnyPlugin"
         }
     }
 }

@@ -1,20 +1,13 @@
-package dafny.gradle.plugin;
+package org.dafny.gradle.plugin;
 
-import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.OutputFiles;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.impldep.com.google.common.io.Files;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
