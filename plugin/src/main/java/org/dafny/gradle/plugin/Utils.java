@@ -48,7 +48,8 @@ public class Utils {
         List<String> args = new ArrayList<>();
 
         for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
-            args.add("--library " + dooFile);
+            args.add("--library");
+            args.add(dooFile);
         }
 
         for (var entry : options.entrySet()) {
