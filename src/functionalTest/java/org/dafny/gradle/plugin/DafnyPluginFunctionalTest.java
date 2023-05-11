@@ -27,7 +27,7 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("build")
-            .withProjectDir(new File("../examples/simple-verify"))
+            .withProjectDir(new File("examples/simple-verify"))
             .buildAndFail();
 
         Assertions.assertTrue(result.getOutput().contains(
@@ -41,7 +41,7 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
-            .withProjectDir(new File("../examples/multi-project"))
+            .withProjectDir(new File("examples/multi-project"))
             .build();
     }
 
@@ -51,7 +51,7 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
-            .withProjectDir(new File("../examples/multi-project-incompatible"))
+            .withProjectDir(new File("examples/multi-project-incompatible"))
             .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
                 "--unicode-char is set locally to True, but the library was built with False"));
@@ -62,7 +62,7 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
-            .withProjectDir(new File("../examples/no-dafny"))
+            .withProjectDir(new File("examples/no-dafny"))
             .build();
     }
 
@@ -71,7 +71,7 @@ class DafnyPluginFunctionalTest {
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
-            .withProjectDir(new File("../examples/wrong-dafny-version"))
+            .withProjectDir(new File("examples/wrong-dafny-version"))
             .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
                 "Incorrect Dafny version: expected 2.3.0, found"));
