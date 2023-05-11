@@ -8,4 +8,3 @@
  */
 
 rootProject.name = "dafny-gradle-plugin"
-include("plugin")
