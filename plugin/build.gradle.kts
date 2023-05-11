@@ -27,11 +27,22 @@ dependencies {
 }
 
 gradlePlugin {
+    website.set("https://github.com/dafny-lang/dafny-gradle-plugin")
+    vcsUrl.set("https://github.com/dafny-lang/dafny-gradle-plugin")
+            
     // Define the plugin
     plugins {
         create("org.dafny.dafny") {
             id = "org.dafny.dafny"
             implementationClass = "org.dafny.gradle.plugin.DafnyPlugin"
+            displayName = "Gradle plugin for Dafny"
+            description = "This plugin offers tight integration of the " +
+                    "Dafny verification-aware programming language with Java: " +
+                    "automatically verifying Dafny source code and compiling it to Java source code, " +
+                    "which the Java plugin will then build together with any hand-written Java in the project. " +
+                    "It also provides a robust approach to distributing and managing Dafny dependencies " +
+                    "through Gradle-supported repositories such as Maven Central."
+            tags.set(listOf("dafny", "verification", "building"))
         }
     }
 }

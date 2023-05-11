@@ -22,7 +22,7 @@ jobs:
       - name: Set up Dafny
         uses: dafny-lang/setup-dafny-action@v1.6.1
         with:
-          dafny-version: "nightly-2023-04-29-f006598"
+          dafny-version: "4.1.0"
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
