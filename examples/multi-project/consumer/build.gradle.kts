@@ -9,5 +9,5 @@ dafny {
 dependencies {
     implementation(project(":producer"))
 
-    implementation("org.dafny:DafnyRuntime:4.9.1")
+    implementation("org.dafny:DafnyRuntime:4.9.0")
 }
