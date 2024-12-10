@@ -5,7 +5,7 @@ plugins {
 }
 
 dafny {
-    dafnyVersion.set("4.9.1")
+    dafnyVersion.set("4.9.0")
 
     optionsMap.put("function-syntax", 3)
 }

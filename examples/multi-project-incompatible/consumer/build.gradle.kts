@@ -9,7 +9,7 @@ dependencies {
 }
 
 dafny {
-    dafnyVersion.set("4.9.1")
+    dafnyVersion.set("4.9.0")
 
     optionsMap.put("unicode-char", true)
 }
