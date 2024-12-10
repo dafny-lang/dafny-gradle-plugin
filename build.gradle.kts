@@ -7,8 +7,10 @@
  */
 
 plugins {
-    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
-    `java-gradle-plugin`
+    // Apply the Plugin Publish plugin to make plugin publication possible
+    // The Plugin Publish plugin will in turn auto-apply the Gradle Plugin Development Plugin (java-gradle-plugin)
+    // and the Maven Publish plugin (maven-publish)
+    id("com.gradle.plugin-publish") version "1.2.0"
 
     `maven-publish`
 }
@@ -22,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.semver4j:semver4j:5.4.1")
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
 }
