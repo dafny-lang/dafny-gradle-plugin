@@ -20,10 +20,10 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
       - name: Set up Dafny
-        uses: dafny-lang/setup-dafny-action@v1.6.1
+        uses: dafny-lang/setup-dafny-action@v1.8.0
         with:
-          dafny-version: "4.1.0"
+          dafny-version: "4.9.0"
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build --info --stacktrace

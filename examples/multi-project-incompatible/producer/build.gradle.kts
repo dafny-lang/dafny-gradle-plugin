@@ -5,12 +5,11 @@ plugins {
 }
 
 dependencies {
-    // TODO: Replace with 4.1.0 once released
-    implementation("org.dafny:DafnyRuntime:4.0.0")
+    implementation("org.dafny:DafnyRuntime:4.9.0")
 }
 
 dafny {
-    dafnyVersion.set("4.1.0")
+    dafnyVersion.set("4.9.0")
 
     optionsMap.put("unicode-char", false)
 }
