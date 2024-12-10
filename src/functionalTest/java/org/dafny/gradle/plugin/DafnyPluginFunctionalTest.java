@@ -76,4 +76,17 @@ class DafnyPluginFunctionalTest {
         Assertions.assertTrue(result.getOutput().contains(
                 "Incorrect Dafny version: expected 2.3.0, found"));
     }
+
+    // Regression test: this previously failed because the standard libraries
+    // end up included in the .doo file,
+    // so passing `--standard-libraries` again when translating led to duplicate definitions.
+    @Test void supportsStandardLibraries() throws IOException {
+        BuildResult result = GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/using-standard-libraries"))
+                .build();
+        Assertions.assertTrue(result.getOutput().contains("Some(4)"));
+    }
 }
