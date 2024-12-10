@@ -5,12 +5,11 @@ plugins {
 }
 
 dafny {
-    dafnyVersion.set("4.1.0")
+    dafnyVersion.set("4.9.1")
 
     optionsMap.put("function-syntax", 3)
 }
 
 dependencies {
-    // TODO: Replace with 4.1.0 once released
-    implementation("org.dafny:DafnyRuntime:4.0.0")
+    implementation("org.dafny:DafnyRuntime:4.9.1")
 }
