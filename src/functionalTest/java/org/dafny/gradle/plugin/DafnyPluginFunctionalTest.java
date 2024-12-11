@@ -31,9 +31,9 @@ class DafnyPluginFunctionalTest {
             .buildAndFail();
 
         Assertions.assertTrue(result.getOutput().contains(
-                "examples/simple-verify/src/main/dafny/simple.dfy(2,15): Error: assertion might not hold"));
+                "examples/simple-verify/src/main/dafny/simple.dfy(2,9): Error: assertion might not hold"));
         Assertions.assertTrue(result.getOutput().contains(
-                "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,15): Error: assertion might not hold"));
+                "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,9): Error: assertion might not hold"));
     }
 
     @Test void canReferenceDependencies() throws IOException {
