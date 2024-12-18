@@ -37,7 +37,7 @@ class DafnyPluginFunctionalTest {
     }
 
     @Test void canReferenceDependencies() throws IOException {
-        BuildResult result = GradleRunner.create()
+        GradleRunner.create()
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
@@ -58,7 +58,7 @@ class DafnyPluginFunctionalTest {
     }
 
     @Test void succeedsWithNoDafnySourceFiles() throws IOException {
-        BuildResult result = GradleRunner.create()
+        GradleRunner.create()
             .forwardOutput()
             .withPluginClasspath()
             .withArguments("clean", "build")
@@ -75,5 +75,18 @@ class DafnyPluginFunctionalTest {
             .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
                 "Incorrect Dafny version: expected 2.3.0, found"));
+    }
+
+    // Regression test: this previously failed because the standard libraries
+    // end up included in the .doo file,
+    // so passing `--standard-libraries` again when translating led to duplicate definitions.
+    // Dafny has addressed this by not including the standard libraries which building .doo files.
+    @Test void supportsStandardLibraries() throws IOException {
+        GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/using-standard-libraries"))
+                .build();
     }
 }
