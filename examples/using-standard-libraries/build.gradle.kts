@@ -8,7 +8,11 @@ repositories {
 }
 
 dafny {
-    dafnyVersion.set("4.9.0")
+    dafnyVersion.set("4.9.1")
 
     optionsMap.put("standard-libraries", true)
+}
+
+dependencies {
+    implementation("org.dafny:DafnyRuntime:4.9.0")
 }
