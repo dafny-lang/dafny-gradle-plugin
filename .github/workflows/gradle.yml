@@ -22,7 +22,9 @@ jobs:
       - name: Set up Dafny
         uses: dafny-lang/setup-dafny-action@v1.8.0
         with:
-          dafny-version: "4.9.1"
+          # Using a nightly for now because --standard-libraries
+          # doesn't work without an unreleased fix
+          dafny-version: "nightly-2024-12-19-7df92c2"
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
