@@ -22,13 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DafnyPluginFunctionalTest {
 
-    @Test void canVerify() throws IOException {
+    @Test
+    void canVerify() throws IOException {
         BuildResult result = GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("build")
-            .withProjectDir(new File("examples/simple-verify"))
-            .buildAndFail();
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("build")
+                .withProjectDir(new File("examples/simple-verify"))
+                .buildAndFail();
 
         Assertions.assertTrue(result.getOutput().contains(
                 "examples/simple-verify/src/main/dafny/simple.dfy(2,9): Error: assertion might not hold"));
@@ -36,57 +37,91 @@ class DafnyPluginFunctionalTest {
                 "examples/simple-verify/src/main/dafny/nested/simple.dfy(2,9): Error: assertion might not hold"));
     }
 
-    @Test void canReferenceDependencies() throws IOException {
+    @Test
+    void canReferenceDependencies() throws IOException {
         GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("clean", "build")
-            .withProjectDir(new File("examples/multi-project"))
-            .build();
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/multi-project"))
+                .build();
     }
 
-    // Expected to fail because the producer and consumer use different values of --unicode-char
-    @Test void failsOnIncompatibleDependencies() throws IOException {
+    // Expected to fail because the producer and consumer use different values of
+    // --unicode-char
+    @Test
+    void failsOnIncompatibleDependencies() throws IOException {
         BuildResult result = GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("clean", "build")
-            .withProjectDir(new File("examples/multi-project-incompatible"))
-            .buildAndFail();
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/multi-project-incompatible"))
+                .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
                 "--unicode-char is set locally to True, but the library was built with False"));
     }
 
-    @Test void succeedsWithNoDafnySourceFiles() throws IOException {
+    @Test
+    void succeedsWithNoDafnySourceFiles() throws IOException {
         GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("clean", "build")
-            .withProjectDir(new File("examples/no-dafny"))
-            .build();
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/no-dafny"))
+                .build();
     }
 
-    @Test void failsOnWrongDafnyVersion() throws IOException {
+    @Test
+    void failsOnWrongDafnyVersion() throws IOException {
         BuildResult result = GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("clean", "build")
-            .withProjectDir(new File("examples/wrong-dafny-version"))
-            .buildAndFail();
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "build")
+                .withProjectDir(new File("examples/wrong-dafny-version"))
+                .buildAndFail();
         Assertions.assertTrue(result.getOutput().contains(
                 "Incorrect Dafny version: expected 2.3.0, found"));
     }
 
     // Regression test: this previously failed because the standard libraries
     // end up included in the .doo file,
-    // so passing `--standard-libraries` again when translating led to duplicate definitions.
-    // Dafny has addressed this by not including the standard libraries which building .doo files.
-    @Test void supportsStandardLibraries() throws IOException {
+    // so passing `--standard-libraries` again when translating led to duplicate
+    // definitions.
+    // Dafny has addressed this by not including the standard libraries which
+    // building .doo files.
+    @Test
+    void supportsStandardLibraries() throws IOException {
         GradleRunner.create()
                 .forwardOutput()
                 .withPluginClasspath()
                 .withArguments("clean", "build")
                 .withProjectDir(new File("examples/using-standard-libraries"))
                 .build();
+    }
+
+    @Test
+    void convertsToJava() throws IOException {
+        var dir = new File("examples/java");
+        // N.B. This path is set in DafnyPlugin.java, then Dafny adds "-java" suffix
+        var expected = dir.toPath().resolve("build/generated/sources/fromDafny/java/main-java/Foo/Bar.java").toFile();
+
+        // Clean build
+        GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "translateDafnyToJava")
+                .withProjectDir(dir)
+                .build();
+        Assertions.assertTrue(expected.exists());
+        var firstTime = expected.lastModified();
+
+        // (Force) an incremental re-build, and check the modified time moved
+        GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("translateDafnyToJava", "--rerun-tasks")
+                .withProjectDir(dir)
+                .build();
+        Assertions.assertTrue(expected.lastModified() > firstTime);
     }
 }

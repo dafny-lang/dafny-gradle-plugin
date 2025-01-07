@@ -74,7 +74,8 @@ public class DafnyPlugin implements Plugin<Project> {
 
         // Register the Dafny-generated code to be compiled
         JavaPluginExtension javaExt = project.getExtensions().findByType(JavaPluginExtension.class);
-        javaExt.getSourceSets().findByName("main").getJava().srcDir(translatedJavaDir);
+        // Annoyingly, Dafny adds "-java" to the supplied directory name
+        javaExt.getSourceSets().findByName("main").getJava().srcDir(new File(translatedJavaDir.getPath() + "-java"));
 
         // Make sure the Dafny-generated code is generated before compiling
         project.getTasks().withType(JavaCompile.class, javaCompile ->
