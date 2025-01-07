@@ -29,16 +29,18 @@ dependencies {
 
 ## Documentation
 
-The plugin provides two tasks:
+The plugin provides four tasks, two of which are disabled by default:
 
 * `verifyDafny`, which verifes all Dafny code under the
   `src/main/dafny` directory.
+* `checkFormatDafny`, which fails if the formatting is incorrect (essentially a linter). Disabled by default.
+* `formatDafny`, which will re-format the source code. Disabled by default.
 * `translateDafnyToJava`, which translates Dafny code
   verified by `verifyDafny`
   to Java code, and ensures the result is also compiled
   together with the `main` Java source set.
 
-Both tasks are executed automatically as dependencies of tasks
+Enabled tasks are executed automatically as dependencies of tasks
 from the Java plugin, but can be executed manually as well.
 
 The plugin also embeds the built Dafny code in the resulting Jar file,
@@ -62,6 +64,14 @@ dafny {
 
 Note there is no support for different Dafny CLI options on a per-file basis.
 We recommend organizing Dafny source into subprojects with the same set of options instead.
+
+To enable one of the source code "format" tasks, for example the linter:
+
+```kotlin
+tasks.checkFormatDafny {
+  enabled = true
+}
+```
 
 ## Known Limitations
 

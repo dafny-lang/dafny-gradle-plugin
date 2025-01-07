@@ -24,11 +24,14 @@ public class DafnyPlugin implements Plugin<Project> {
         // https://docs.gradle.org/current/userguide/implementing_gradle_plugins.html#reacting_to_plugins
         project.getPluginManager().apply(JavaPlugin.class);
 
-        DafnyExtension extension =
-                project.getExtensions().create("dafny", DafnyExtension.class);
+        DafnyExtension extension = project.getExtensions().create("dafny", DafnyExtension.class);
 
         TaskProvider<DafnyVersionCheckTask> dafnyVersionCheckProvider = project.getTasks()
                 .register("checkDafnyVersion", DafnyVersionCheckTask.class);
+        TaskProvider<DafnyFormatTask> dafnyCheckFormatProvider = project.getTasks()
+                .register("checkFormatDafny", DafnyFormatTask.class);
+        TaskProvider<DafnyFormatTask> dafnyFormatProvider = project.getTasks()
+                .register("formatDafny", DafnyFormatTask.class);
         TaskProvider<DafnyVerifyTask> dafnyVerifyProvider = project.getTasks()
                 .register("verifyDafny", DafnyVerifyTask.class);
         TaskProvider<DafnyTranslateTask> dafnyTranslateProvider = project.getTasks()
@@ -36,12 +39,14 @@ public class DafnyPlugin implements Plugin<Project> {
 
         // TODO: Configurable file collection in extension for Dafny source files,
         // possibly sourceSet with doo file location as output.
-        FileCollection dafnySourceFiles = project.fileTree("src/main/dafny", t ->
-                t.include("**/*.dfy").include("**/*.doo"));
+        FileCollection dafnySourceFiles = project.fileTree("src/main/dafny",
+                t -> t.include("**/*.dfy").include("**/*.doo"));
         // TODO: More specific location
         File dooFile = new File(project.getBuildDir(), META_INF_DOO_FILE_NAME);
-        // This is not automatically picked up as a source directory for Java compilation,
-        // so we have to add it below, but it still seems like a good, idiomatic location.
+        // This is not automatically picked up as a source directory for Java
+        // compilation,
+        // so we have to add it below, but it still seems like a good, idiomatic
+        // location.
         File translatedJavaDir = project.getBuildDir().toPath()
                 .resolve("generated")
                 .resolve("sources")
@@ -54,8 +59,32 @@ public class DafnyPlugin implements Plugin<Project> {
             dafnyVersionCheckTask.getClasspath().set(Utils.getCompileClasspath(project));
             dafnyVersionCheckTask.getRequiredVersion().set(extension.getDafnyVersion());
         });
+        dafnyCheckFormatProvider.configure(dafnyCheckFormatTask -> {
+            dafnyCheckFormatTask.dependsOn(dafnyVersionCheckProvider);
+
+            dafnyCheckFormatTask.getSourceFiles().from(dafnySourceFiles);
+            dafnyCheckFormatTask.getIsCheck().set(true); // just check
+            dafnyCheckFormatTask.getClasspath().set(Utils.getCompileClasspath(project));
+            dafnyCheckFormatTask.getOptions().set(extension.getOptionsMap());
+
+            // Off by default
+            dafnyCheckFormatTask.setEnabled(false);
+        });
+        dafnyFormatProvider.configure(dafnyFormatTask -> {
+            dafnyFormatTask.dependsOn(dafnyVersionCheckProvider);
+
+            dafnyFormatTask.getSourceFiles().from(dafnySourceFiles);
+            dafnyFormatTask.getIsCheck().set(false); // do formatting
+            dafnyFormatTask.getClasspath().set(Utils.getCompileClasspath(project));
+            dafnyFormatTask.getOptions().set(extension.getOptionsMap());
+
+            // Off by default
+            dafnyFormatTask.setEnabled(false);
+        });
         dafnyVerifyProvider.configure(dafnyVerifyTask -> {
             dafnyVerifyTask.dependsOn(dafnyVersionCheckProvider);
+            dafnyVerifyTask.dependsOn(dafnyCheckFormatProvider);
+            dafnyVerifyTask.dependsOn(dafnyFormatProvider);
 
             dafnyVerifyTask.getSourceFiles().from(dafnySourceFiles);
             dafnyVerifyTask.getClasspath().set(Utils.getCompileClasspath(project));
@@ -64,6 +93,8 @@ public class DafnyPlugin implements Plugin<Project> {
         });
         dafnyTranslateProvider.configure(dafnyTranslateTask -> {
             dafnyTranslateTask.dependsOn(dafnyVersionCheckProvider);
+            dafnyTranslateTask.dependsOn(dafnyCheckFormatProvider);
+            dafnyTranslateTask.dependsOn(dafnyFormatProvider);
             dafnyTranslateTask.dependsOn(dafnyVerifyProvider);
 
             dafnyTranslateTask.getDooFile().set(dooFile);
@@ -78,9 +109,7 @@ public class DafnyPlugin implements Plugin<Project> {
         javaExt.getSourceSets().findByName("main").getJava().srcDir(new File(translatedJavaDir.getPath() + "-java"));
 
         // Make sure the Dafny-generated code is generated before compiling
-        project.getTasks().withType(JavaCompile.class, javaCompile ->
-            javaCompile.dependsOn(dafnyTranslateProvider)
-        );
+        project.getTasks().withType(JavaCompile.class, javaCompile -> javaCompile.dependsOn(dafnyTranslateProvider));
 
         // Embed the .doo file in the .jar file's META-INF
         project.getTasks().withType(Jar.class, jarTask -> {

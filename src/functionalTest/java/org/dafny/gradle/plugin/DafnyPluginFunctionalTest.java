@@ -124,4 +124,15 @@ class DafnyPluginFunctionalTest {
                 .build();
         Assertions.assertTrue(expected.lastModified() > firstTime);
     }
+
+    @Test
+    void failsOnBadFormat() throws IOException {
+        BuildResult result = GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "checkFormatDafny")
+                .withProjectDir(new File("examples/bad-format"))
+                .buildAndFail();
+        Assertions.assertTrue(result.getOutput().contains("Foo.dfy needs to be formatted"));
+    }
 }
