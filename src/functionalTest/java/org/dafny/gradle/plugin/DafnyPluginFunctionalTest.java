@@ -3,8 +3,6 @@
  */
 package org.dafny.gradle.plugin;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
 import java.io.IOException;
 import org.gradle.testkit.runner.BuildResult;
