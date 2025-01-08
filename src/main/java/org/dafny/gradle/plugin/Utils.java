@@ -1,9 +1,5 @@
 package org.dafny.gradle.plugin;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.FileCollection;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,49 +13,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.FileCollection;
 
 public class Utils {
 
-    // TODO: Shape this as something Gradle can cache for us,
-    // which will also ensure these are cleaned up as needed.
-    public static List<String> dooFilesForClasspath(Collection<File> classpath) throws IOException {
-        List<String> dooFiles = new ArrayList<>();
-        for (File classpathEntry : classpath) {
-            if (classpathEntry.getName().endsWith(".jar")) {
-                JarFile jarFile = new JarFile(classpathEntry);
-                // TODO: Look for any .doo file, or perhaps use an SPI?
-                ZipEntry dooEntry = jarFile.getEntry("META-INF/" + DafnyPlugin.META_INF_DOO_FILE_NAME);
-                if (dooEntry != null) {
-                    InputStream dooStream = jarFile.getInputStream(dooEntry);
-                    Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".doo");
-                    OutputStream extractedDooStream = new FileOutputStream(extractedDoo.toFile());
-                    dooStream.transferTo(extractedDooStream);
+  // TODO: Shape this as something Gradle can cache for us,
+  // which will also ensure these are cleaned up as needed.
+  public static List<String> dooFilesForClasspath(Collection<File> classpath) throws IOException {
+    List<String> dooFiles = new ArrayList<>();
+    for (File classpathEntry : classpath) {
+      if (classpathEntry.getName().endsWith(".jar")) {
+        JarFile jarFile = new JarFile(classpathEntry);
+        // TODO: Look for any .doo file, or perhaps use an SPI?
+        ZipEntry dooEntry = jarFile.getEntry("META-INF/" + DafnyPlugin.META_INF_DOO_FILE_NAME);
+        if (dooEntry != null) {
+          InputStream dooStream = jarFile.getInputStream(dooEntry);
+          Path extractedDoo = Files.createTempFile(classpathEntry.getName(), ".doo");
+          OutputStream extractedDooStream = new FileOutputStream(extractedDoo.toFile());
+          dooStream.transferTo(extractedDooStream);
 
-                    dooFiles.add(extractedDoo.toString());
-                }
-            }
-            // TODO: handle class directories too
+          dooFiles.add(extractedDoo.toString());
         }
-
-        return dooFiles;
+      }
+      // TODO: handle class directories too
     }
 
-    public static List<String> getCommonArguments(FileCollection classpath, Map<String, Object> options) throws IOException {
-        List<String> args = new ArrayList<>();
+    return dooFiles;
+  }
 
-        for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
-            args.add("--library");
-            args.add(dooFile);
-        }
+  public static List<String> getCommonArguments(
+      FileCollection classpath, Map<String, Object> options) throws IOException {
+    List<String> args = new ArrayList<>();
 
-        for (var entry : options.entrySet()) {
-            args.add("--" + entry.getKey() + ":" + entry.getValue());
-        }
-
-        return args;
+    for (var dooFile : Utils.dooFilesForClasspath(classpath.getFiles())) {
+      args.add("--library");
+      args.add(dooFile);
     }
 
-    public static Configuration getCompileClasspath(Project project) {
-        return project.getConfigurations().getByName("compileClasspath");
+    for (var entry : options.entrySet()) {
+      args.add("--" + entry.getKey() + ":" + entry.getValue());
     }
+
+    return args;
+  }
+
+  public static Configuration getCompileClasspath(Project project) {
+    return project.getConfigurations().getByName("compileClasspath");
+  }
 }
