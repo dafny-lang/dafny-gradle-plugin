@@ -40,9 +40,5 @@ public abstract class DafnyTranslateTask extends DafnyBaseTask {
         args.add(outputDir.getPath());
 
         invokeDafnyCLI(args);
-
-        // Annoyingly, Dafny adds "-java" to the directory, so rename it
-        File outputDirWithJava = new File(outputDir.getParentFile(), outputDir.getName() + "-java");
-        outputDirWithJava.renameTo(outputDir);
     }
 }
