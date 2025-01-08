@@ -5,7 +5,7 @@ import org.gradle.api.provider.Property;
 
 public abstract class DafnyExtension {
 
-    abstract public Property<String> getDafnyVersion();
+  public abstract Property<String> getDafnyVersion();
 
-    abstract public MapProperty<String, Object> getOptionsMap();
+  public abstract MapProperty<String, Object> getOptionsMap();
 }
