@@ -9,7 +9,7 @@ import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
-/** A simple unit test for the 'dafny.gradle.plugin.greeting' plugin. */
+/** A simple unit test for the 'org.dafny.dafny' plugin. */
 class DafnyPluginTest {
   @Test
   void pluginRegistersATask() {

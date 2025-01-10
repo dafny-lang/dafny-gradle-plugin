@@ -14,15 +14,15 @@ For example:
 
 ```kotlin
 plugins {
-    id("org.dafny.dafny").version("0.1.0")
+    id("org.dafny.dafny").version("0.2.0")
 }
 
 dafny {
-    dafnyVersion.set("4.1.0")
+    dafnyVersion.set("4.9.1")
 }
 
 dependencies {
-    implementation("org.dafny:DafnyRuntime:4.1.0")
+    implementation("org.dafny:DafnyRuntime:4.9.1")
 }
 
 ```
@@ -31,7 +31,7 @@ dependencies {
 
 The plugin provides two tasks:
 
-* `verifyDafny`, which verifes all Dafny code under the
+* `verifyDafny`, which verifies all Dafny code under the
   `src/main/dafny` directory.
 * `translateDafnyToJava`, which translates Dafny code
   verified by `verifyDafny`
@@ -53,7 +53,7 @@ in the `dafny` extension:
 
 ```kotlin
 dafny {
-    dafnyVersion.set("4.1.0")
+    dafnyVersion.set("4.9.1")
   
     optionsMap.put("unicode-char", false)
     optionsMap.put("isolate-assertions", true)
